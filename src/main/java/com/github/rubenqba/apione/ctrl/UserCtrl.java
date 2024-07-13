@@ -1,22 +1,43 @@
 package com.github.rubenqba.apione.ctrl;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
+import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Map;
+
 @RestController
+@PreAuthorize("hasAnyAuthority('Admin', 'Read')")
 public class UserCtrl {
 
     @GetMapping("/users/me")
-    public ResponseEntity<User> getCurrentUser() {
+    public ResponseEntity<?> getCurrentUser(@AuthenticationPrincipal OidcUser user) {
         SecurityContext context = SecurityContextHolder.getContext();
         Authentication authentication = context.getAuthentication();
-        User user = (User) authentication.getPrincipal();
-        return ResponseEntity.ok(user);
+        return ResponseEntity.ok(Map.of("principal", authentication.getPrincipal(), "authorities", authentication.getAuthorities()));
     }
 
+    @GetMapping("/public")
+    @PreAuthorize("isAnonymous()")
+    public ResponseEntity<String> anonymous() {
+        return ResponseEntity.ok("Hello Anonymous");
+    }
+
+    @GetMapping("/protected_write")
+    @PreAuthorize("hasAnyAuthority('Admin', 'Write')")
+    public ResponseEntity<String> protectedWrite() {
+        return ResponseEntity.ok("Hello Protected Write");
+    }
+
+    @GetMapping("/protected_admin")
+    @PreAuthorize("hasAuthority('Admin')")
+    public ResponseEntity<String> protectedAdmin() {
+        return ResponseEntity.ok("Hello Protected Admin");
+    }
 }
