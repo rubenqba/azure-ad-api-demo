@@ -9,26 +9,26 @@ azure:
 spring:
   application:
     name: api-one
-#  security:
-#    oauth2:
-#      resourceserver:
-#        jwt:
-#          issuer-uri: https://dardeus3.b2clogin.com/694b6df5-fdfa-47a5-af86-9a18d87a4742/v2.0/
-#          audiences:
-#            - 3ef1d5ec-7f30-4d2b-b729-d12fa07d008a
-  cloud:
-    azure:
-      active-directory:
-        b2c:
-          enabled: true
-          base-uri: https://${azure.tenant.name}.b2clogin.com             # Such as: https://xxxxb2c.b2clogin.com
-          profile:
-            tenant-id: ${azure.tenant.id}
-#          app-id-uri: ${APP_ID_URI}         # If you're using v1.0 token, configure app-id-uri for `aud` verification
-          credential:
-            client-id: ${azure.client-id}           # If you're using v2.0 token, configure client-id for `aud` verification
-          user-flows:
-            sign-up-or-sign-in: ${azure.user-flow-name}
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+#          issuer-uri: https://${azure.tenant.name}.b2clogin.com/tfp/${azure.tenant.id}/${azure.user-flow-name}/v2.0/
+          audiences:
+            - 3ef1d5ec-7f30-4d2b-b729-d12fa07d008a
+          jwk-set-uri: https://${azure.tenant.name}.b2clogin.com/${azure.tenant.id}/discovery/v2.0/keys?p=${azure.user-flow-name}
+#  cloud:
+#    azure:
+#      active-directory:
+#        b2c:
+#          enabled: true
+#          base-uri: https://${azure.tenant.name}.b2clogin.com             # Such as: https://xxxxb2c.b2clogin.com
+#          profile:
+#            tenant-id: ${azure.tenant.id}
+#          credential:
+#            client-id: ${azure.client-id}           # If you're using v2.0 token, configure client-id for `aud` verification
+#          user-flows:
+#            sign-up-or-sign-in: ${azure.user-flow-name}
 logging:
   level:
     root: info

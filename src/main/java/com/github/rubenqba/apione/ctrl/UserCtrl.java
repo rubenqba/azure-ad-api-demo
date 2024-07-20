@@ -1,5 +1,6 @@
 package com.github.rubenqba.apione.ctrl;
 
+import com.github.rubenqba.apione.security.CheckOwnershipOrAdmin;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -7,13 +8,13 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
 @RestController
-@PreAuthorize("hasAnyAuthority('Admin', 'Read')")
+//@PreAuthorize("hasAnyAuthority('Admin', 'Read')")
 public class UserCtrl {
 
     @GetMapping("/users/me")
@@ -39,5 +40,11 @@ public class UserCtrl {
     @PreAuthorize("hasAuthority('Admin')")
     public ResponseEntity<String> protectedAdmin() {
         return ResponseEntity.ok("Hello Protected Admin");
+    }
+
+    @GetMapping("/protected_flow/{campaign}")
+    @CheckOwnershipOrAdmin
+    public ResponseEntity<?> protectedUser(@PathVariable String campaign) {
+        return ResponseEntity.ok(Map.of("message", "Protected campaign changed"));
     }
 }
