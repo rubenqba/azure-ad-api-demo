@@ -15,7 +15,7 @@ spring:
         jwt:
 #          issuer-uri: https://${azure.tenant.name}.b2clogin.com/tfp/${azure.tenant.id}/${azure.user-flow-name}/v2.0/
           audiences:
-            - 3ef1d5ec-7f30-4d2b-b729-d12fa07d008a
+            - ${azure.client-id}
           jwk-set-uri: https://${azure.tenant.name}.b2clogin.com/${azure.tenant.id}/discovery/v2.0/keys?p=${azure.user-flow-name}
 #  cloud:
 #    azure:

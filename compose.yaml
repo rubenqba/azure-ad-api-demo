@@ -1,0 +1,8 @@
+
+services:
+  db:
+    image: mongo
+    volumes:
+      - ./target/db:/data/db
+    ports:
+      - 27017:27017

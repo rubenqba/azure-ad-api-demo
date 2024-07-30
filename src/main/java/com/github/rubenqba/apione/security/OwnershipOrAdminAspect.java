@@ -64,4 +64,12 @@ public class OwnershipOrAdminAspect {
 
         return joinPoint.proceed();
     }
+
+    public Object onlyAdmins(ProceedingJoinPoint joinPoint) throws Throwable {
+        var authorities = SecurityContextHolder.getContext().getAuthentication().getAuthorities();
+        if (authorities.stream().anyMatch(a -> a.getAuthority().equals("Admin"))) {
+            return joinPoint.proceed();
+        }
+        throw new IllegalAccessException("Access denied, only admins can perform this action");
+    }
 }
