@@ -46,4 +46,9 @@ public class TeamService {
         log.info("obteniendo todos los equipos");
         return repository.findAll();
     }
+
+    public Team update(String id, Team team) {
+        var obj = findById(id).orElseThrow();
+        return repository.save(new Team(obj.id(), team.name(), team.plan()));
+    }
 }

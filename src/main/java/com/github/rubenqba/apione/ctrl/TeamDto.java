@@ -7,5 +7,5 @@ import jakarta.validation.constraints.NotBlank;
  *
  * @author rbresler
  **/
-public record TeamDto(@NotBlank String name) {
+public record TeamDto(@NotBlank String name, String plan) {
 }

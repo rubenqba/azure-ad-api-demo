@@ -34,4 +34,8 @@ public class ClientService {
     public Iterable<Client> findAll() {
         return repository.findAll();
     }
+
+    public Iterable<Client> findAllByTeam(String team) {
+        return repository.findAllByTeam(team).toList();
+    }
 }

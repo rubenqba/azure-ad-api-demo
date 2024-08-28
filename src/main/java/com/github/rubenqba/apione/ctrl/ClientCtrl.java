@@ -1,13 +1,18 @@
 package com.github.rubenqba.apione.ctrl;
 
 import com.github.rubenqba.apione.models.Client;
+import com.github.rubenqba.apione.security.SecurityUtils;
 import com.github.rubenqba.apione.service.ClientService;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
 import java.util.Optional;
 
 /**
@@ -16,7 +21,7 @@ import java.util.Optional;
  * @author rbresler
  **/
 @RestController
-@Validated
+@PreAuthorize("hasAuthority('AZ_Admin')")
 public class ClientCtrl {
     private static final Logger log = LoggerFactory.getLogger(ClientCtrl.class);
 
@@ -34,9 +39,20 @@ public class ClientCtrl {
     }
 
     @GetMapping("/clients")
+    @PreAuthorize("hasAnyAuthority('AZ_Admin', 'AZ_Read')")
     public Iterable<Client> listAll() {
-        log.info("obteniendo la lista de todos los clientes");
-        return service.findAll();
+        if (SecurityUtils.isCurrentUserAdmin()) {
+            log.info("obteniendo la lista de todos los clientes");
+            return service.findAll();
+        }
+
+        String team = SecurityUtils.getCurrentUserTeam();
+        if (team != null) {
+            log.info("obteniendo la lista de clientes del team '{}'", team);
+            return service.findAllByTeam(team);
+        }
+        log.warn("usuario no tiene team asignado");
+        return Collections.emptyList();
     }
 
     @GetMapping("/clients/{id}")

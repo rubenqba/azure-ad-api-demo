@@ -1,0 +1,71 @@
+[
+  {
+    "_class": "com.github.rubenqba.apione.models.Client",
+    "id": "1",
+    "firstName": "John",
+    "lastName": "Doe",
+    "email": "john.doe@example.com",
+    "roles": [
+      "buyer"
+    ]
+  },
+  {
+    "_class": "com.github.rubenqba.apione.models.Client",
+    "id": "2",
+    "firstName": "Jane",
+    "lastName": "Doe",
+    "email": "jane.doe@example.com",
+    "roles": [
+      "admin"
+    ]
+  },
+  {
+    "_class": "com.github.rubenqba.apione.models.Client",
+    "id": "3",
+    "firstName": "Jim",
+    "lastName": "Beam",
+    "email": "jim.beam@example.com",
+    "roles": [
+      "buyer",
+      "staff"
+    ]
+  },
+  {
+    "_class": "com.github.rubenqba.apione.models.Client",
+    "id": "4",
+    "firstName": "Jack",
+    "lastName": "Daniels",
+    "email": "jack.daniels@example.com",
+    "roles": [
+      "buyer"
+    ]
+  },
+  {
+    "_class": "com.github.rubenqba.apione.models.Client",
+    "id": "5",
+    "firstName": "Josie",
+    "lastName": "Wales",
+    "email": "josie.wales@example.com",
+    "roles": [
+      "admin",
+      "buyer"
+    ]
+  },
+  {
+    "_class": "com.github.rubenqba.apione.models.Team",
+    "id": "66eace3a-5f2d-11ef-a16f-00155d5436dd",
+    "name": "Wales",
+    "plan": "startup"
+  },
+  {
+    "_class": "com.github.rubenqba.apione.models.Team",
+    "id": "7052ba6e-5f2d-11ef-baef-00155d5436dd",
+    "name": "Cemex",
+    "plan": "enterprise"
+  },{
+    "_class": "com.github.rubenqba.apione.models.Team",
+    "id": "765039d2-5f2d-11ef-9464-00155d5436dd",
+    "name": "Viva Aerobus",
+    "plan": "growth"
+  }
+]

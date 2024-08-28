@@ -16,16 +16,17 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableMethodSecurity
 public class SecurityConfig {
 
+    /**
+     * Configures the security filter chain that carries the JWT token validation (using spring security)
+     * @param http
+     * @return
+     * @throws Exception
+     */
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-//        http
-//                .csrf(AbstractHttpConfigurer::disable)
-//                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-//                .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()));
-
         JwtAuthenticationConverter authenticationConverter = new JwtAuthenticationConverter();
         JwtGrantedAuthoritiesConverter jwtGrantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
-        jwtGrantedAuthoritiesConverter.setAuthorityPrefix("");
+        jwtGrantedAuthoritiesConverter.setAuthorityPrefix("AZ_");
         authenticationConverter.setJwtGrantedAuthoritiesConverter(jwtGrantedAuthoritiesConverter);
         http
                 .csrf(AbstractHttpConfigurer::disable)
@@ -34,8 +35,19 @@ public class SecurityConfig {
         return http.build();
     }
 
+//    /**
+//     * Configures the security filter chain that carries the JWT token validation (using azure ad b2c way)
+//     * @param http
+//     * @return
+//     * @throws Exception
+//     */
 //    @Bean
-//    JwtDecoder jwtDecoder(@Value("${spring.security.oauth2.resourceserver.jwt.issuer-uri}") String issuerUri) {
-//        return NimbusJwtDecoder.withJwkSetUri(String.format("%s/.well-known/jwks.json", issuerUri)).build();
+//    SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+//        http
+//                .csrf(AbstractHttpConfigurer::disable)
+//                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+//                .with(AadResourceServerHttpSecurityConfigurer.aadResourceServer(), Customizer.withDefaults());
+//        return http.build();
 //    }
+
 }

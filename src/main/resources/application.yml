@@ -1,11 +1,3 @@
-azure:
-  tenant:
-    id: 694b6df5-fdfa-47a5-af86-9a18d87a4742
-    name: dardeus3
-  client-id: 3ef1d5ec-7f30-4d2b-b729-d12fa07d008a
-  user-flow-name: B2C_1_ONE
-
-
 spring:
   application:
     name: api-one
@@ -13,22 +5,12 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-#          issuer-uri: https://${azure.tenant.name}.b2clogin.com/tfp/${azure.tenant.id}/${azure.user-flow-name}/v2.0/
           audiences:
             - ${azure.client-id}
           jwk-set-uri: https://${azure.tenant.name}.b2clogin.com/${azure.tenant.id}/discovery/v2.0/keys?p=${azure.user-flow-name}
-#  cloud:
-#    azure:
-#      active-directory:
-#        b2c:
-#          enabled: true
-#          base-uri: https://${azure.tenant.name}.b2clogin.com             # Such as: https://xxxxb2c.b2clogin.com
-#          profile:
-#            tenant-id: ${azure.tenant.id}
-#          credential:
-#            client-id: ${azure.client-id}           # If you're using v2.0 token, configure client-id for `aud` verification
-#          user-flows:
-#            sign-up-or-sign-in: ${azure.user-flow-name}
+  docker:
+    compose:
+      lifecycle-management: start_only
 logging:
   level:
     root: info
