@@ -2,6 +2,7 @@ package com.github.rubenqba.apione.ctrl;
 
 import com.github.rubenqba.apione.models.Team;
 import com.github.rubenqba.apione.security.SecurityUtils;
+import com.github.rubenqba.apione.service.PlanService;
 import com.github.rubenqba.apione.service.TeamService;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
@@ -25,22 +26,28 @@ public class TeamCtrl {
     private static final Logger log = LoggerFactory.getLogger(TeamCtrl.class);
 
     private final TeamService service;
+    private final PlanService plans;
 
-    public TeamCtrl(TeamService service) {
+    public TeamCtrl(TeamService service, PlanService plans) {
         this.service = service;
+        this.plans = plans;
     }
 
     // create a team using body
     @PostMapping("/teams")
-    public Team create(@RequestBody @Valid TeamDto team) {
-        log.info("creando el equipo {}", team);
-        return service.create(new Team(null, team.name(), null));
+    public Team create(@RequestBody @Valid TeamDto dto) {
+        log.info("creando el equipo {}", dto);
+
+        var plan = plans.getPlan(dto.plan()).orElseThrow(() -> new IllegalArgumentException("Plan not found"));
+        return service.create(dto.name(), plan);
     }
 
     @PutMapping("/teams/{id}")
-    public Team update(@PathVariable String id, @RequestBody @Valid TeamDto team) {
+    public ResponseEntity<Team> update(@PathVariable String id, @RequestBody @Valid TeamDto team) {
         log.info("actualizando el equipo {}", team);
-        return service.update(id, new Team(null, team.name(), team.plan()));
+        var plan = plans.getPlan(team.plan()).orElseThrow(() -> new IllegalArgumentException("Plan not found"));
+        service.updateTeam(id, team.name(), plan);
+        return ResponseEntity.of(service.findTeam(id));
     }
 
     // get all teams
@@ -65,13 +72,13 @@ public class TeamCtrl {
     @PreAuthorize("hasAnyAuthority('AZ_Admin', 'AZ_Read')")
     public ResponseEntity<Team> findTeam(@PathVariable String id) {
         log.info("obteniendo el equipo con id={}", id);
-        return ResponseEntity.of(service.findById(id));
+        return ResponseEntity.of(service.findTeam(id));
     }
 
     // delete team by id
     @DeleteMapping("/teams/{id}")
     public void deleteTeam(@PathVariable String id) {
         log.info("borrando el equipo con id={}", id);
-        service.deleteById(id);
+        service.deleteTeam(id);
     }
 }

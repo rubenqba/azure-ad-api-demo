@@ -7,27 +7,20 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.*;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.data.mongodb.core.mapping.DocumentReference;
 
 import java.time.Instant;
 
-/**
- * Team summary here...
- *
- * @author rbresler
- **/
 @Document
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Team {
+public class Plan {
     @Id
     private String id;
     @Indexed(unique = true)
     private String name;
-    @DocumentReference(collection = "plans")
-    private Plan plan;
+    private String description;
     @CreatedDate
     private Instant createdAt;
     @CreatedBy
@@ -36,4 +29,6 @@ public class Team {
     private Instant updatedAt;
     @LastModifiedBy
     private String updatedBy;
+    @Version
+    private Long version;
 }

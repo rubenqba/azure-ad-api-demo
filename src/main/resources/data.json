@@ -50,22 +50,5 @@
       "admin",
       "buyer"
     ]
-  },
-  {
-    "_class": "com.github.rubenqba.apione.models.Team",
-    "id": "66eace3a-5f2d-11ef-a16f-00155d5436dd",
-    "name": "Wales",
-    "plan": "startup"
-  },
-  {
-    "_class": "com.github.rubenqba.apione.models.Team",
-    "id": "7052ba6e-5f2d-11ef-baef-00155d5436dd",
-    "name": "Cemex",
-    "plan": "enterprise"
-  },{
-    "_class": "com.github.rubenqba.apione.models.Team",
-    "id": "765039d2-5f2d-11ef-9464-00155d5436dd",
-    "name": "Viva Aerobus",
-    "plan": "growth"
   }
 ]

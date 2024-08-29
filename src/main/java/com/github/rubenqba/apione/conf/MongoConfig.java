@@ -4,15 +4,23 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
+import org.springframework.data.domain.AuditorAware;
+import org.springframework.data.mongodb.config.EnableMongoAuditing;
 import org.springframework.data.repository.init.Jackson2RepositoryPopulatorFactoryBean;
 
 @Configuration
-public class PopulatorConfiguration {
+@EnableMongoAuditing
+public class MongoConfig {
 
     @Bean
     public Jackson2RepositoryPopulatorFactoryBean respositoryPopulator() {
         Jackson2RepositoryPopulatorFactoryBean factory = new Jackson2RepositoryPopulatorFactoryBean();
         factory.setResources(new Resource[]{new ClassPathResource("data.json")});
         return factory;
+    }
+
+    @Bean
+    public AuditorAware<String> auditorProvider() {
+        return new JwtAuditorAware();
     }
 }
