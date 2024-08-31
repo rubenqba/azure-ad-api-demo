@@ -1,6 +1,7 @@
 package com.github.rubenqba.apione.service;
 
 import com.github.rubenqba.apione.models.Plan;
+import com.github.rubenqba.apione.models.Summary;
 import com.github.rubenqba.apione.models.Team;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,7 +33,7 @@ public class TeamService {
         log.info("creando el equipo {}", name);
         return repository.save(Team.builder()
                 .name(name)
-                .plan(plan)
+                .plan(new Summary(plan.getId(), null))
                 .build());
     }
 
@@ -57,7 +58,7 @@ public class TeamService {
         final var team = findTeam(id);
         team.ifPresent(p -> {
             p.setName(name);
-            p.setPlan(plan);
+            p.setPlan(new Summary(plan.getId(), null));
             repository.save(p);
         });
     }

@@ -1,4 +1,4 @@
-package com.github.rubenqba.apione.ctrl;
+package com.github.rubenqba.apione.ctrl.dto;
 
 import jakarta.validation.constraints.NotBlank;
 

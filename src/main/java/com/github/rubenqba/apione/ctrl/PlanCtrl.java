@@ -1,5 +1,6 @@
 package com.github.rubenqba.apione.ctrl;
 
+import com.github.rubenqba.apione.ctrl.dto.CreatePlanDto;
 import com.github.rubenqba.apione.models.Plan;
 import com.github.rubenqba.apione.service.PlanService;
 import jakarta.validation.Valid;

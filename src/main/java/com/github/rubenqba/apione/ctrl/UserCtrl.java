@@ -1,15 +1,14 @@
 package com.github.rubenqba.apione.ctrl;
 
-import com.github.rubenqba.apione.models.Client;
+import com.github.rubenqba.apione.ctrl.dto.CreateUserDto;
+import com.github.rubenqba.apione.models.User;
 import com.github.rubenqba.apione.security.SecurityUtils;
 import com.github.rubenqba.apione.service.ClientService;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.oauth2.core.oidc.user.OidcUser;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
@@ -22,25 +21,25 @@ import java.util.Optional;
  **/
 @RestController
 @PreAuthorize("hasAuthority('AZ_Admin')")
-public class ClientCtrl {
-    private static final Logger log = LoggerFactory.getLogger(ClientCtrl.class);
+public class UserCtrl {
+    private static final Logger log = LoggerFactory.getLogger(UserCtrl.class);
 
     private final ClientService service;
 
-    public ClientCtrl(ClientService service) {
+    public UserCtrl(ClientService service) {
         this.service = service;
     }
 
     // create client using body
-    @PostMapping("/clients")
-    public Client create(@RequestBody @Valid Client client) {
-        log.info("creando el cliente {}", client);
-        return service.save(client);
+    @PostMapping("/users")
+    public User create(@RequestBody @Valid CreateUserDto user) {
+        log.info("creando el cliente {}", user);
+        return service.save(user.firstName(), user.lastName(), user.email(), user.avatarUrl(), user.team(), user.roles());
     }
 
-    @GetMapping("/clients")
+    @GetMapping("/users")
     @PreAuthorize("hasAnyAuthority('AZ_Admin', 'AZ_Read')")
-    public Iterable<Client> listAll() {
+    public Iterable<User> listAll() {
         if (SecurityUtils.isCurrentUserAdmin()) {
             log.info("obteniendo la lista de todos los clientes");
             return service.findAll();
@@ -55,21 +54,22 @@ public class ClientCtrl {
         return Collections.emptyList();
     }
 
-    @GetMapping("/clients/{id}")
-    public Optional<Client> getClient(@PathVariable String id) {
+    @GetMapping("/users/{id}")
+    public Optional<User> getClient(@PathVariable String id) {
         log.info("obteniendo el cliente con id={}", id);
-        return service.findById(id);
+        return service.findUser(id);
     }
 
-    @DeleteMapping("/clients/{id}")
+    @DeleteMapping("/users/{id}")
     public void deleteClient(@PathVariable String id) {
         log.info("borrando el cliente con id={}", id);
-        service.deleteById(id);
+        service.deleteUser(id);
     }
 
-    @PutMapping("/clients/{id}")
-    public Client updateClient(@PathVariable String id, @RequestBody Client client) {
+    @PutMapping("/users/{id}")
+    public ResponseEntity<User> updateClient(@PathVariable String id, @RequestBody CreateUserDto client) {
         log.info("actualizando el cliente con id={}", id);
-        return service.save(client);
+        service.updateUser(id, client.firstName(), client.lastName(), client.avatarUrl(), client.team(), client.roles());
+        return ResponseEntity.of(service.findUser(id));
     }
 }

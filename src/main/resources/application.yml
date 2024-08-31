@@ -13,15 +13,16 @@ spring:
     compose:
       lifecycle-management: start_only
 logging:
+  group:
+    persistence:
+      - org.springframework.data.mongodb
+      - org.springframework.data.mongodb.core
   level:
     root: info
     com.github.rubenqba.apione: debug
-    org:
-      springframework:
-        web: DEBUG
-        boot:
-          autoconfigure:
-            security: DEBUG
-        security.oauth2: DEBUG
-        security.oauth2.client: DEBUG
-        security.oauth2.server.resource: DEBUG
+    org.springframework.web: DEBUG
+    org.springframework.data.mongodb.core: DEBUG
+#        boot.autoconfigure.security: DEBUG
+#        security.oauth2: DEBUG
+#        security.oauth2.client: DEBUG
+#        security.oauth2.server.resource: DEBUG
