@@ -1,13 +1,14 @@
 package com.github.rubenqba.azuread.service;
 
 import com.github.rubenqba.azuread.model.CustomUser;
-import com.github.rubenqba.azuread.model.Summary;
+import com.github.rubenqba.azuread.model.TeamSummary;
 import com.microsoft.graph.models.ObjectIdentity;
 import com.microsoft.graph.models.User;
 import com.microsoft.graph.serviceclient.GraphServiceClient;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
+import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.stream.Stream;
 
@@ -19,10 +20,15 @@ public class AzureClientServiceImpl implements AzureClientService {
     private final String[] userAttributes;
 
     public AzureClientServiceImpl(String directoryExtension, GraphServiceClient msfClient) {
-        this.directoryExtension = directoryExtension;
+        this.directoryExtension = directoryExtension.replace("-", "");
         if (StringUtils.hasText(directoryExtension)) {
-            var extension = directoryExtension.replace("-", "");
-            this.userAttributes = new String[]{"id", "givenName", "surname", "country", "otherMails", "identities", "createdDateTime", "extension_" + extension + "_SubscriptionType", "extension_" + extension + "_PartnerRole", "extension_" + extension + "_PartnerName", "extension_" + extension + "_PartnerID"};
+            this.userAttributes = new String[]{
+                    "id", "givenName", "surname", "country", "otherMails", "identities", "createdDateTime",
+                    "extension_" + this.directoryExtension + "_SubscriptionType",
+                    "extension_" + this.directoryExtension + "_PartnerRole",
+                    "extension_" + this.directoryExtension + "_PartnerName",
+                    "extension_" + this.directoryExtension + "_PartnerID"
+            };
         } else {
             this.userAttributes = new String[]{"id", "givenName", "surname", "country", "otherMails", "identities", "createdDateTime"};
         }
@@ -31,19 +37,44 @@ public class AzureClientServiceImpl implements AzureClientService {
 
     @Override
     public List<CustomUser> getUsers() {
-        return msfClient.users().get(config -> {
-            config.queryParameters.select = userAttributes;
-        }).getValue().stream().map(this::mapUser).toList();
+        return msfClient.users()
+                .get(config -> {
+                    config.queryParameters.select = userAttributes;
+                })
+                .getValue()
+                .stream()
+                .map(this::mapUser)
+                .toList();
+    }
+
+    @Override
+    public List<CustomUser> getTeamUsers(String team) {
+        return msfClient.users()
+                .get(config -> {
+                    config.queryParameters.select = userAttributes;
+                    config.queryParameters.filter = "extension_" + this.directoryExtension + "_PartnerID eq '" + team + "'";
+                })
+                .getValue()
+                .stream()
+                .map(this::mapUser)
+                .toList();
+    }
+
+    @Override
+    public Optional<CustomUser> findUser(String id) {
+        return Optional.ofNullable(msfClient.users().byUserId(id).get(
+                config -> config.queryParameters.select = userAttributes
+        )).map(this::mapUser);
     }
 
     private CustomUser mapUser(User user) {
-        System.out.println("User: " + user.getGivenName() + " " + user.getSurname());
+        if (user == null) return null;
         var email = extractUserEmails(user).findFirst().orElse(null);
         var team = CollectionUtils.isEmpty(user.getAdditionalData()) ? null : mapTeam(user.getAdditionalData());
         var roles = CollectionUtils.isEmpty(user.getAdditionalData()) ? null : mapRoles(user.getAdditionalData());
-        var subscription = CollectionUtils.isEmpty(user.getAdditionalData()) ? null : mapSubscription(user.getAdditionalData());
+        var created = Optional.ofNullable(user.getCreatedDateTime()).map(OffsetDateTime::toInstant).orElse(null);
 
-        return new CustomUser(user.getId(), user.getGivenName(), user.getSurname(), email, user.getMail(), team, roles);
+        return new CustomUser(user.getId(), user.getGivenName(), user.getSurname(), email, user.getMail(), team, roles, created);
     }
 
     private Stream<String> extractUserEmails(User user) {
@@ -58,10 +89,11 @@ public class AzureClientServiceImpl implements AzureClientService {
         return data.getOrDefault("extension_" + directoryExtension + "_SubscriptionType", "").toString();
     }
 
-    private Summary mapTeam(Map<String, Object> data) {
+    private TeamSummary mapTeam(Map<String, Object> data) {
         var id = data.getOrDefault("extension_" + directoryExtension + "_PartnerID", "").toString();
         var team = data.getOrDefault("extension_" + directoryExtension + "_PartnerName", "").toString();
-        return StringUtils.hasText(id) ? new Summary(id, team) : null;
+        var subscription = mapSubscription(data);
+        return StringUtils.hasText(id) ? new TeamSummary(id, team, subscription) : null;
     }
 
     private Set<String> mapRoles(Map<String, Object> data) {
@@ -70,15 +102,28 @@ public class AzureClientServiceImpl implements AzureClientService {
     }
 
     @Override
-    public CustomUser updateUser(CustomUser user) {
+    public void updateUser(String id, String firstName, String lastName) {
         User stored = new User();
-        HashMap<String, Object> additionalData = new HashMap<String, Object>();
-        additionalData.put("extension_" + directoryExtension + "_SubscriptionType", null);
-        additionalData.put("extension_" + directoryExtension + "_PartnerRole", String.join(",", user.roles()));
-        additionalData.put("extension_" + directoryExtension + "_PartnerID", user.team().id());
-        additionalData.put("extension_" + directoryExtension + "_PartnerName", user.team().name());
+        stored.setGivenName(firstName);
+        stored.setSurname(lastName);
+        stored.setDisplayName(String.join(" ", firstName, lastName));
+        msfClient.users().byUserId(id).patch(stored);
+    }
+
+    @Override
+    public void updateUserSubscription(String id, TeamSummary team, Set<String> roles) {
+        User stored = new User();
+        HashMap<String, Object> additionalData = new HashMap<>();
+        additionalData.put("extension_" + directoryExtension + "_PartnerID", team.id());
+        additionalData.put("extension_" + directoryExtension + "_PartnerName", team.name());
+        additionalData.put("extension_" + directoryExtension + "_SubscriptionType", team.subscription());
+        additionalData.put("extension_" + directoryExtension + "_PartnerRole", String.join(",", roles));
         stored.setAdditionalData(additionalData);
-        User result = msfClient.users().byUserId(user.id()).patch(stored);
-        return mapUser(result);
+        msfClient.users().byUserId(id).patch(stored);
+    }
+
+    @Override
+    public void deleteUser(String id) {
+        msfClient.users().byUserId(id).delete();
     }
 }
