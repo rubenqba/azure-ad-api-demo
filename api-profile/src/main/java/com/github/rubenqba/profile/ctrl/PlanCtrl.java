@@ -26,6 +26,7 @@ public class PlanCtrl {
     }
 
     @GetMapping("/plans")
+    @PreAuthorize("hasAnyAuthority('AZ_Admin','AZ_Read')")
     public Collection<Plan> getPlans() {
         return plans.getAllPlans();
     }
@@ -36,6 +37,7 @@ public class PlanCtrl {
     }
 
     @GetMapping("/plans/{id}")
+    @PreAuthorize("hasAnyAuthority('AZ_Admin','AZ_Read')")
     public ResponseEntity<Plan> findPlan(@PathVariable String id, @RequestBody @Valid CreatePlanDto dto) {
         return ResponseEntity.of(plans.getPlan(id));
     }

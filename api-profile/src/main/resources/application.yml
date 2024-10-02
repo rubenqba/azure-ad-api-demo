@@ -1,14 +1,15 @@
-
 spring:
   application:
-    name: api-one
-  security:
-    oauth2:
-      resourceserver:
-        jwt:
-          audiences:
-            - ${azure.client-id}
-          jwk-set-uri: https://${azure.tenant.name}.b2clogin.com/${azure.tenant.id}/discovery/v2.0/keys?p=${azure.user-flow-name}
+    name: api-azure
+  config:
+    import:
+      - 'optional:configtree:/run/secrets/'
+      - 'configserver:'
+  cloud:
+    config:
+      uri: https://cc.dardeus.io/config
+      fail-fast: true
+      profile: ${spring.profiles.active}
   docker:
     compose:
       lifecycle-management: start_only
@@ -17,12 +18,16 @@ logging:
     persistence:
       - org.springframework.data.mongodb
       - org.springframework.data.mongodb.core
+    security:
+      - org.springframework.security
+      - org.springframework.security.oauth2
+      - org.springframework.security.oauth2.client
+      - org.springframework.security.oauth2.server
+      - org.springframework.security.web
+      - org.springframework.security.config
   level:
     root: info
     com.github.rubenqba.apione: debug
-    org.springframework.web: DEBUG
-    org.springframework.data.mongodb.core: DEBUG
-#        boot.autoconfigure.security: DEBUG
-#        security.oauth2: DEBUG
-#        security.oauth2.client: DEBUG
-#        security.oauth2.server.resource: DEBUG
+    web: DEBUG
+    persistence: off
+    security: trace

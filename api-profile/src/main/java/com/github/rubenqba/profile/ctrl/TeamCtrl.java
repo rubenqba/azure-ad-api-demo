@@ -15,6 +15,9 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
+import java.util.List;
+
 /**
  * TeamCtrl summary here...
  *
@@ -63,7 +66,7 @@ public class TeamCtrl {
         var team = SecurityUtils.getUserTeam(auth.getToken());
         if (team != null) {
             log.info("obteniendo todos los equipos");
-            return service.findAll();
+            return service.findTeam(team).map(List::of).orElseGet(Collections::emptyList);
         }
         throw new AccessDeniedException("User has no team");
     }

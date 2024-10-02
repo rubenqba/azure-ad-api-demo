@@ -1,7 +1,6 @@
 package com.github.rubenqba.profile.ctrl;
 
 import com.github.rubenqba.azuread.model.CustomUser;
-import com.github.rubenqba.azuread.model.TeamSummary;
 import com.github.rubenqba.profile.ctrl.dto.CreateUserDto;
 import com.github.rubenqba.profile.models.User;
 import com.github.rubenqba.profile.security.SecurityUtils;

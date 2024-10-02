@@ -3,33 +3,54 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.3.3</version>
+        <groupId>com.dardeus</groupId>
+        <artifactId>dardeus-starter-parent</artifactId>
+        <version>4.2.5</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
+
     <groupId>com.github.rubenqba</groupId>
     <artifactId>azure-ad-api-demo</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <description>azure-ad-api-demo</description>
     <packaging>pom</packaging>
-    <url/>
-    <licenses>
-        <license/>
-    </licenses>
-    <developers>
-        <developer/>
-    </developers>
-    <scm>
-        <connection/>
-        <developerConnection/>
-        <tag/>
-        <url/>
-    </scm>
+
+    <repositories>
+        <repository>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <id>central</id>
+            <url>https://repo1.maven.org/maven2/</url>
+        </repository>
+        <repository>
+            <id>dardeus</id>
+            <name>nexus repo</name>
+            <url>https://nexus.tools.dardeus.io/repository/maven-releases</url>
+        </repository>
+    </repositories>
+
     <properties>
         <java.version>21</java.version>
-        <spring-cloud-azure.version>5.15.0</spring-cloud-azure.version>
+        <microsoft-graph.version>6.16.0</microsoft-graph.version>
+        <azure-identity.version>1.13.3</azure-identity.version>
     </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.microsoft.graph</groupId>
+                <artifactId>microsoft-graph</artifactId>
+                <version>${microsoft-graph.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.azure</groupId>
+                <artifactId>azure-identity</artifactId>
+                <version>${azure-identity.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
     <modules>
         <module>api-profile</module>
         <module>azure-ad-connector</module>

@@ -1,6 +1,5 @@
 package com.github.rubenqba.profile.service;
 
-import com.github.rubenqba.azuread.service.AzureClientService;
 import com.github.rubenqba.profile.models.Summary;
 import com.github.rubenqba.profile.models.User;
 import org.slf4j.Logger;
